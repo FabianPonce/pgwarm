@@ -26,7 +26,7 @@ public class ApplicationArguments {
     public List<String> schemas = new ArrayList<String>(Lists.newArrayList(new String[] { "public" }));
 
     @Parameter(names = { "--workers", "-w"}, description = "The number of parallel relations that can be warmed at any given time")
-    public int workers = 4;
+    public int workers = 1;
 
     @Parameter(names = { "--help" }, description = "Display the help text", help = true)
     public boolean help;
