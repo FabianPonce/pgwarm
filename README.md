@@ -33,11 +33,11 @@ Usage: pgwarm [options]
 ## Example
 ```
 $# ./pgwarm -h preproduction-toastorders-2.cuscngx50y2y.us-east-1.rds.amazonaws.com -u toastapp_g1 -d toastorders
-pgwarm, initiating database warming...
-
-public."AccountingReportConfig" [================================================================================] (100%)
-public."MenuItem_Portion" [================================================================================] (100%)
-public."ToastCard" [================================================================================] (100%)
-public."Orders" [====================                                                            ] (25%)
+public."AccountingReportConfig" [==================================================] (100%)
+public."MenuItem_Portion" [==================================================] (100%)
+public."ToastCard" [==================================================] (100%)
+public."SystemMenuOptionGroup" [==================================================] (100%)
+public."CustomerCreditConfig" [==================================================] (100%)
+public."Orders" [==                                                ] (5%)
 ```
 

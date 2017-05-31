@@ -1,7 +1,7 @@
 package com.toasttab.pgwarm.util;
 
 public class ConsoleProgressBar {
-    private static int BAR_WIDTH = 80;
+    private static int BAR_WIDTH = 50;
 
     private final int percent;
     public ConsoleProgressBar(int percent) {
