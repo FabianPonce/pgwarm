@@ -8,10 +8,10 @@ import java.sql.*;
 
 public class RelationWarmupTask {
     /* This setting controls the maximum number of PostgreSQL blocks to prewarm in one query.
-     * By default, PostgreSQL contains 8,196 bytes per block. Therefore the default of 100,000 represents a read of
-     * 819.6 MB of data.
+     * By default, PostgreSQL contains 8,196 bytes per block. Therefore the default of 1,000 represents a read of
+     * 8.196 MB of data.
      */
-    private static final int MAX_BLOCK_READ_SIZE = 100000;
+    private static final int MAX_BLOCK_READ_SIZE = 1000;
 
     private Connection connection;
     private DatabaseRelationship relation;
