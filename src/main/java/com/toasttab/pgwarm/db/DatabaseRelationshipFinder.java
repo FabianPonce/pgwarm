@@ -18,13 +18,13 @@ public class DatabaseRelationshipFinder {
         ArrayList<DatabaseRelationship> retList = new ArrayList<DatabaseRelationship>();
         try {
             PreparedStatement stmt = connection.prepareStatement(
-                    "SELECT table_name AS relname, table_schema AS schema FROM information_schema.tables UNION " +
-                    "SELECT relname, schemaname AS schema FROM pg_stat_all_indexes"
+                    "SELECT table_name AS relname, table_schema AS schema, 'r' AS relkind FROM information_schema.tables UNION " +
+                    "SELECT relname, schemaname AS schema, 'i' AS relkind FROM pg_stat_all_indexes"
             );
             ResultSet result = stmt.executeQuery();
 
             while(result.next()) {
-                DatabaseRelationship rel = new DatabaseRelationship(result.getString("relname"), result.getString("schema"));
+                DatabaseRelationship rel = new DatabaseRelationship(result.getString("relname"), result.getString("schema"), RelationshipType.fromRelKind(result.getString("relkind")));
                 if(this.filter.filter(rel))
                     retList.add(rel);
             }
