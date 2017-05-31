@@ -30,4 +30,25 @@ public enum RelationshipType {
 
         throw new IllegalArgumentException("relKind " + relKind + " is not known.");
     }
+
+    public char toRelKind() {
+        switch(this) {
+            case TABLE:
+                return 'r';
+            case INDEX:
+                return 'i';
+            case VIEW:
+                return 'v';
+            case MATERIALIZED_VIEW:
+                return 'm';
+            case COMPOSITE_TYPE:
+                return 'c';
+            case TOAST_TABLE:
+                return 't';
+            case FOREIGN_TABLE:
+                return 'f';
+        }
+
+        throw new IllegalStateException();
+    }
 }
