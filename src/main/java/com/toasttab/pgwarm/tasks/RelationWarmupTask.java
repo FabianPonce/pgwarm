@@ -1,6 +1,7 @@
 package com.toasttab.pgwarm.tasks;
 
 import com.toasttab.pgwarm.db.DatabaseRelationship;
+import com.toasttab.pgwarm.db.util.SQLUtility;
 import com.toasttab.pgwarm.util.ConsoleProgressBar;
 
 import java.sql.*;
@@ -58,6 +59,8 @@ public class RelationWarmupTask {
             printProgress(100);
         } catch(SQLException e) {
             e.printStackTrace();
+        } finally {
+            SQLUtility.closeQuietly(connection);
         }
     }
 

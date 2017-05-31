@@ -6,6 +6,7 @@ public class DatabaseConnectionStringBuilder {
     private String password = "";
     private int port        = 5432;
     private String database = "";
+    private String applicationName = "";
 
     public DatabaseConnectionStringBuilder() {
     }
@@ -16,6 +17,7 @@ public class DatabaseConnectionStringBuilder {
         password = clone.password;
         port = clone.port;
         database = clone.database;
+        applicationName = clone.applicationName;
     }
 
     public final DatabaseConnectionStringBuilder withHostname(String hostname) {
@@ -53,8 +55,15 @@ public class DatabaseConnectionStringBuilder {
         return builder;
     }
 
+    public final DatabaseConnectionStringBuilder withApplicationName(String applicationName) {
+        DatabaseConnectionStringBuilder builder = new DatabaseConnectionStringBuilder(this);
+        builder.applicationName = applicationName;
+
+        return builder;
+    }
+
     public final String toString() {
-        return String.format("jdbc:postgresql://%s:%s/%s?ssl=true&user=%s&password=%s&sslfactory=org.postgresql.ssl.NonValidatingFactory",
-                hostname, port, database, username, password);
+        return String.format("jdbc:postgresql://%s:%s/%s?ssl=true&user=%s&password=%s&sslfactory=org.postgresql.ssl.NonValidatingFactory&ApplicationName=%s",
+                hostname, port, database, username, password, applicationName);
     }
 }
