@@ -26,6 +26,8 @@ public enum RelationshipType {
                 return TOAST_TABLE;
             case 'f':
                 return FOREIGN_TABLE;
+            case 's':
+                return SEQUENCE;
         }
 
         throw new IllegalArgumentException("relKind " + relKind + " is not known.");
@@ -47,6 +49,8 @@ public enum RelationshipType {
                 return 't';
             case FOREIGN_TABLE:
                 return 'f';
+            case SEQUENCE:
+                return 's';
         }
 
         throw new IllegalStateException();
