@@ -3,6 +3,11 @@ pgwarm attempts to solve the problem of how to eliminate the first touch penalty
 
 By default, all of the tables and indexes in the public schema are read from the disk.
 
+## Build
+You can build this from source by using Gradle.
+
+Run `./gradlew build` and then check the build/distributions folder for artifacts.
+
 ## Usage
 You can display the usage via the --help parameter.
 ```
@@ -28,6 +33,9 @@ Usage: pgwarm [options]
     --username, -u
       The database user to connect with
       Default: <empty string>
+    --workers, -w
+      The number of parallel relations that can be warmed at any given time
+      Default: 1
 ```
 
 ## Example
@@ -40,4 +48,3 @@ public."SystemMenuOptionGroup" [================================================
 public."CustomerCreditConfig" [==================================================] (100%)
 public."Orders" [==                                                ] (5%)
 ```
-
