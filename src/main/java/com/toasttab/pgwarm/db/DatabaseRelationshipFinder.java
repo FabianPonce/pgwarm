@@ -7,13 +7,14 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class DatabaseRelationshipFinder {
     private final BasicDataSource pool;
-    private final RelationshipFilter filter;
-    public DatabaseRelationshipFinder(BasicDataSource pool, RelationshipFilter filter) {
+    private final List<RelationshipFilter> filters;
+    public DatabaseRelationshipFinder(BasicDataSource pool, List<RelationshipFilter> filters) {
         this.pool = pool;
-        this.filter = filter;
+        this.filters = filters;
     }
 
     public List<DatabaseRelationship> getRelationships() {
@@ -29,7 +30,16 @@ public class DatabaseRelationshipFinder {
 
             while(result.next()) {
                 DatabaseRelationship rel = new DatabaseRelationship(result.getString("relname"), result.getString("schema"), RelationshipType.fromRelKind(result.getString("relkind")));
-                if(this.filter.filter(rel))
+                // Test the relationship against all filters. Any failures, and we reject.
+                boolean passes = true;
+                for(RelationshipFilter filter : filters) {
+                    if(!filter.filter(rel)) {
+                        passes = false;
+                        break;
+                    }
+                }
+
+                if(passes)
                     retList.add(rel);
             }
         } catch (SQLException e) {

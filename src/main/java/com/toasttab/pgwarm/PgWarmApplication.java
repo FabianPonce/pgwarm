@@ -1,6 +1,9 @@
 package com.toasttab.pgwarm;
 
 import com.beust.jcommander.JCommander;
+import com.toasttab.pgwarm.db.filters.RelationshipFilter;
+import com.toasttab.pgwarm.db.filters.RelationshipNameFilter;
+import com.toasttab.pgwarm.db.filters.RelationshipSchemaFilter;
 import com.toasttab.pgwarm.db.util.DatabaseConnectionStringBuilder;
 import com.toasttab.pgwarm.tasks.DatabaseWarmJob;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -9,6 +12,8 @@ import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PgWarmApplication {
 
@@ -48,9 +53,21 @@ public class PgWarmApplication {
         connectionPool.setInitialSize(arguments.workers+1);
         connectionPool.setUrl(connectionString);
 
-        new DatabaseWarmJob(connectionPool, arguments.schemas, arguments.workers).run();
+        new DatabaseWarmJob(connectionPool, getFiltersFromArguments(arguments), arguments.workers).run();
 
         System.out.println();
         System.out.println("Warming complete!");
+    }
+
+    private static List<RelationshipFilter> getFiltersFromArguments(ApplicationArguments args) {
+        ArrayList<RelationshipFilter> filters = new ArrayList<RelationshipFilter>();
+
+        filters.add(new RelationshipSchemaFilter(args.schemas));
+
+        if(args.relations.size() > 0) {
+            filters.add(new RelationshipNameFilter(args.relations));
+        }
+
+        return filters;
     }
 }

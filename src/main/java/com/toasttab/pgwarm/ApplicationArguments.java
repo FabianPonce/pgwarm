@@ -25,6 +25,9 @@ public class ApplicationArguments {
     @Parameter(names = { "--schema", "-s" }, description = "The schema(s) to warm")
     public List<String> schemas = new ArrayList<String>(Lists.newArrayList(new String[] { "public" }));
 
+    @Parameter(names = { "--relations", "-r" }, description = "A list of relations to warm")
+    public List<String> relations = new ArrayList<String>();
+
     @Parameter(names = { "--workers", "-w"}, description = "The number of parallel relations that can be warmed at any given time")
     public int workers = 1;
 

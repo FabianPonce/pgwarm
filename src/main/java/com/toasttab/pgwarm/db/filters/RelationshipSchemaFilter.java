@@ -4,10 +4,10 @@ import com.toasttab.pgwarm.db.DatabaseRelationship;
 
 import java.util.List;
 
-public class SchemaRelationshipFilter implements RelationshipFilter {
+public class RelationshipSchemaFilter implements RelationshipFilter {
     private final List<String> schemas;
 
-    public SchemaRelationshipFilter(List<String> schemas) {
+    public RelationshipSchemaFilter(List<String> schemas) {
         this.schemas = schemas;
     }
 

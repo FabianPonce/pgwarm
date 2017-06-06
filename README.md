@@ -27,6 +27,9 @@ Usage: pgwarm [options]
     --port, -P
       The port number the target database is listening for connections on
       Default: 5432
+    --relations, -r
+      A list of relations to warm
+      Default: []
     --schema, -s
       The schema(s) to warm
       Default: [public]
