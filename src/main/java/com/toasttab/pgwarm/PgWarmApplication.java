@@ -8,10 +8,6 @@ import com.toasttab.pgwarm.db.util.DatabaseConnectionStringBuilder;
 import com.toasttab.pgwarm.tasks.DatabaseWarmJob;
 import org.apache.commons.dbcp2.BasicDataSource;
 
-import java.net.URI;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +49,7 @@ public class PgWarmApplication {
         connectionPool.setInitialSize(arguments.workers+1);
         connectionPool.setUrl(connectionString);
 
-        new DatabaseWarmJob(connectionPool, getFiltersFromArguments(arguments), arguments.workers).run();
+        new DatabaseWarmJob(connectionPool, getFiltersFromArguments(arguments), arguments.workers, arguments.prewarmMode).run();
 
         System.out.println();
         System.out.println("Warming complete!");

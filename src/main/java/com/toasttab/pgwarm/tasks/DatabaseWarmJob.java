@@ -2,6 +2,7 @@ package com.toasttab.pgwarm.tasks;
 
 import com.toasttab.pgwarm.db.DatabaseRelationship;
 import com.toasttab.pgwarm.db.DatabaseRelationshipFinder;
+import com.toasttab.pgwarm.db.PrewarmMode;
 import com.toasttab.pgwarm.db.filters.RelationshipFilter;
 import com.toasttab.pgwarm.db.filters.RelationshipSchemaFilter;
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -16,13 +17,19 @@ public class DatabaseWarmJob {
     private final BasicDataSource pool;
     private final List<RelationshipFilter> filters;
     private final int workers;
+    private final PrewarmMode mode;
 
     private final ConcurrentLinkedQueue<DatabaseRelationship> workQueue = new ConcurrentLinkedQueue<DatabaseRelationship>();
 
-    public DatabaseWarmJob(BasicDataSource pool, List<RelationshipFilter> filters, int workers) {
+    public DatabaseWarmJob(BasicDataSource pool, List<RelationshipFilter> filters, int workers, PrewarmMode mode) {
         this.pool = pool;
         this.filters = filters;
         this.workers = workers;
+        this.mode = mode;
+    }
+
+    public PrewarmMode getPrewarmMode() {
+        return mode;
     }
 
     public final DatabaseRelationship getNextRelationship() {

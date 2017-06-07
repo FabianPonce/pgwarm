@@ -21,6 +21,10 @@ Usage: pgwarm [options]
     --host, -h
       The hostname or IP address of the target database
       Default: <empty string>
+    --mode, -m
+      The mode to pass to pg_prewarm
+      Default: READ
+      Possible Values: [PREFETCH, READ, BUFFER]
     --password, -p
       The password to connect with
       Default: <empty string>

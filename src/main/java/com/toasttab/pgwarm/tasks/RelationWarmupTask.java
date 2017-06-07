@@ -1,6 +1,7 @@
 package com.toasttab.pgwarm.tasks;
 
 import com.toasttab.pgwarm.db.DatabaseRelationship;
+import com.toasttab.pgwarm.db.PrewarmMode;
 import com.toasttab.pgwarm.db.util.SQLUtility;
 import com.toasttab.pgwarm.util.ConsoleProgressBar;
 
@@ -13,12 +14,14 @@ public class RelationWarmupTask {
      */
     private static final int MAX_BLOCK_READ_SIZE = 1000;
 
-    private Connection connection;
-    private DatabaseRelationship relation;
+    private final Connection connection;
+    private final DatabaseRelationship relation;
+    private final PrewarmMode mode;
 
-    public RelationWarmupTask(Connection conn, DatabaseRelationship relation) {
+    public RelationWarmupTask(Connection conn, DatabaseRelationship relation, PrewarmMode mode) {
         this.connection = conn;
         this.relation = relation;
+        this.mode = mode;
     }
 
     private int getTotalBlocks() throws SQLException {
@@ -47,10 +50,11 @@ public class RelationWarmupTask {
                 printProgress( (int) ((float)currBlock / (float)maxBlockId * 100) );
 
                 PreparedStatement stmt = connection.prepareStatement(String.format(
-                        "SELECT pg_prewarm('%s.\"%s\"', 'read', 'main', ?, ?)", relation.getSchema(), relation.getName()
+                        "SELECT pg_prewarm('%s.\"%s\"', ?, 'main', ?, ?)", relation.getSchema(), relation.getName()
                 ));
-                stmt.setInt(1, currBlock);
-                stmt.setInt(2, toBlock);
+                stmt.setString(1, mode.toSqlArgument());
+                stmt.setInt(2, currBlock);
+                stmt.setInt(3, toBlock);
                 stmt.executeQuery();
 
                 currBlock = toBlock + 1;

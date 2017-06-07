@@ -2,6 +2,7 @@ package com.toasttab.pgwarm;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.internal.Lists;
+import com.toasttab.pgwarm.db.PrewarmMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,9 @@ public class ApplicationArguments {
 
     @Parameter(names = { "--workers", "-w"}, description = "The number of parallel relations that can be warmed at any given time")
     public int workers = 1;
+
+    @Parameter(names = { "--mode", "-m" }, description = "The mode to pass to pg_prewarm", converter = PrewarmModeConverter.class)
+    public PrewarmMode prewarmMode = PrewarmMode.READ;
 
     @Parameter(names = { "--help" }, description = "Display the help text", help = true)
     public boolean help;
