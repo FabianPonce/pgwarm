@@ -24,7 +24,7 @@ public class DatabaseRelationshipFinder {
             connection = pool.getConnection();
             PreparedStatement stmt = connection.prepareStatement(
                     "SELECT table_name AS relname, table_schema AS schema, 'r' AS relkind FROM information_schema.tables UNION " +
-                    "SELECT relname, schemaname AS schema, 'i' AS relkind FROM pg_stat_all_indexes"
+                    "SELECT indexrelname, schemaname AS schema, 'i' AS relkind FROM pg_stat_all_indexes"
             );
             ResultSet result = stmt.executeQuery();
 
