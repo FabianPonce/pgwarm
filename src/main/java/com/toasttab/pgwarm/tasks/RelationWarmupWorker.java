@@ -16,7 +16,7 @@ public class RelationWarmupWorker implements Runnable {
         while((relationship = job.getNextRelationship()) != null) {
             try {
                 new RelationWarmupTask(job.getConnectionPool().getConnection(), relationship, job.getPrewarmMode()).run();
-            } catch (SQLException e) {
+            } catch (SQLException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
