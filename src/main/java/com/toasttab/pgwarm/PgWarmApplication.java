@@ -52,6 +52,8 @@ public class PgWarmApplication {
         connectionPool.setPassword(arguments.dbPassword);
         connectionPool.setDriverClassName("org.postgresql.Driver");
         connectionPool.setInitialSize(arguments.workers+1);
+        connectionPool.setMaxTotal(arguments.workers+1);
+        connectionPool.setMaxIdle(-1);
         connectionPool.setUrl(connectionString);
 
         new DatabaseWarmJob(connectionPool, getFiltersFromArguments(arguments), arguments.workers, arguments.prewarmMode).run();
