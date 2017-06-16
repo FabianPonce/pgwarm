@@ -17,26 +17,26 @@ public class DatabaseRelationshipFinder {
 
     public List<Relationship> getRelationships() throws SQLException {
         ArrayList<Relationship> retList = new ArrayList<Relationship>();
-        Connection connection = pool.getConnection();
+        try (Connection connection = pool.getConnection())
+        {
+            RelationshipFactory factory = new RelationshipFactory();
 
-        RelationshipFactory factory = new RelationshipFactory();
+            new DatabaseTableLoader(connection, factory).loadTables();
+            new DatabaseIndexLoader(connection, factory).loadIndices();
 
-        new DatabaseTableLoader(connection, factory).loadTables();
-        new DatabaseIndexLoader(connection, factory).loadIndices();
-
-        for(Relationship rel : factory.getRelations()) {
-            boolean passes = true;
-            for(RelationshipFilter filter : filters) {
-                if(!filter.filter(rel)) {
-                    passes = false;
-                    break;
+            for(Relationship rel : factory.getRelations()) {
+                boolean passes = true;
+                for(RelationshipFilter filter : filters) {
+                    if(!filter.filter(rel)) {
+                        passes = false;
+                        break;
+                    }
                 }
-            }
 
-            if(passes)
-                retList.add(rel);
+                if(passes)
+                    retList.add(rel);
+            }
         }
-        connection.close();
 
         return retList;
     }
