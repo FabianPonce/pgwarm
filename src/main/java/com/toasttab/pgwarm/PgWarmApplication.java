@@ -26,6 +26,11 @@ public class PgWarmApplication {
 
         commander.parse(args);
 
+        String dbPasswdEnvironmentVar = System.getenv(ApplicationArguments.PASSWORD_ENV_VARIABLE);
+        if(arguments.dbPassword == "" && dbPasswdEnvironmentVar != null) {
+            arguments.dbPassword = dbPasswdEnvironmentVar;
+        }
+
         String connectionString = new DatabaseConnectionStringBuilder()
                 .withHostname(arguments.dbHost)
                 .withPort(arguments.dbPort)

@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ApplicationArguments {
+    public static final String PASSWORD_ENV_VARIABLE = "PGPASSWORD";
+
     @Parameter(names = { "--host", "-h" }, description = "The hostname or IP address of the target database")
     public String dbHost = "";
 
@@ -20,7 +22,10 @@ public class ApplicationArguments {
     @Parameter(names = { "--username", "-u" }, description = "The database user to connect with")
     public String dbUser = "";
 
-    @Parameter(names = { "--password", "-p" }, description = "The password to connect with")
+    @Parameter(names = { "--password", "-p" },
+            description = "The password to connect with. You may also set the environment variable "
+                    + PASSWORD_ENV_VARIABLE + " in order to prevent the password from being exposed in the process" +
+                    " list.")
     public String dbPassword = "";
 
     @Parameter(names = { "--schema", "-s" }, description = "The schema(s) to warm")
