@@ -1,6 +1,6 @@
 package com.toasttab.pgwarm.db.filters;
 
-import com.toasttab.pgwarm.db.DatabaseRelationship;
+import com.toasttab.pgwarm.db.Relationship;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public class RelationshipSchemaFilter implements RelationshipFilter {
         this.schemas = schemas;
     }
 
-    public boolean filter(DatabaseRelationship relation) {
+    public boolean filter(Relationship relation) {
         return (schemas.contains(relation.getSchema()));
     }
 }

@@ -1,6 +1,6 @@
 package com.toasttab.pgwarm.db.filters;
 
-import com.toasttab.pgwarm.db.DatabaseRelationship;
+import com.toasttab.pgwarm.db.Relationship;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public class RelationshipNameFilter implements RelationshipFilter {
         this.names = names;
     }
 
-    public boolean filter(DatabaseRelationship relation) {
+    public boolean filter(Relationship relation) {
         for(String name : names) {
             if(relation.getName().equalsIgnoreCase(name)) {
                 return true;

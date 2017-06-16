@@ -1,6 +1,6 @@
 package com.toasttab.pgwarm.db.filters;
 
-import com.toasttab.pgwarm.db.DatabaseRelationship;
+import com.toasttab.pgwarm.db.Relationship;
 
 public interface RelationshipFilter {
 
@@ -9,5 +9,5 @@ public interface RelationshipFilter {
      * @param relation
      * @return true if the relationship satisfies given criteria, false otherwise
      */
-    public boolean filter(DatabaseRelationship relation);
+    public boolean filter(Relationship relation);
 }
