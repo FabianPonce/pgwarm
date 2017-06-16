@@ -1,8 +1,7 @@
 package com.toasttab.pgwarm.tasks;
 
-import com.toasttab.pgwarm.db.DatabaseRelationship;
+import com.toasttab.pgwarm.db.Relationship;
 import com.toasttab.pgwarm.db.PrewarmMode;
-import com.toasttab.pgwarm.db.util.SQLUtility;
 import com.toasttab.pgwarm.util.ConsoleProgressBar;
 
 import java.sql.*;
@@ -15,10 +14,10 @@ public class RelationWarmupTask {
     private static final int MAX_BLOCK_READ_SIZE = 1000;
 
     private final Connection connection;
-    private final DatabaseRelationship relation;
+    private final Relationship relation;
     private final PrewarmMode mode;
 
-    public RelationWarmupTask(Connection conn, DatabaseRelationship relation, PrewarmMode mode) {
+    public RelationWarmupTask(Connection conn, Relationship relation, PrewarmMode mode) {
         this.connection = conn;
         this.relation = relation;
         this.mode = mode;
@@ -37,35 +36,31 @@ public class RelationWarmupTask {
         throw new SQLException("No results returned.");
     }
 
-    public void run() {
+    public void run() throws SQLException {
         System.out.println();
 
-        try {
-            int maxBlockId = Math.max(0, getTotalBlocks() - 1);
-            int currBlock = 0;
+        int maxBlockId = Math.max(0, getTotalBlocks() - 1);
+        int currBlock = 0;
 
-            while(currBlock < maxBlockId) {
-                int toBlock = Math.min(currBlock + MAX_BLOCK_READ_SIZE, maxBlockId);
+        while(currBlock < maxBlockId) {
+            int toBlock = Math.min(currBlock + MAX_BLOCK_READ_SIZE, maxBlockId);
 
-                printProgress( (int) ((float)currBlock / (float)maxBlockId * 100) );
+            printProgress( (int) ((float)currBlock / (float)maxBlockId * 100) );
 
-                PreparedStatement stmt = connection.prepareStatement(String.format(
-                        "SELECT pg_prewarm('%s.\"%s\"', ?, 'main', ?, ?)", relation.getSchema(), relation.getName()
-                ));
-                stmt.setString(1, mode.toSqlArgument());
-                stmt.setInt(2, currBlock);
-                stmt.setInt(3, toBlock);
-                stmt.executeQuery();
+            PreparedStatement stmt = connection.prepareStatement(String.format(
+                    "SELECT pg_prewarm('%s.\"%s\"', ?, 'main', ?, ?)", relation.getSchema(), relation.getName()
+            ));
+            stmt.setString(1, mode.toSqlArgument());
+            stmt.setInt(2, currBlock);
+            stmt.setInt(3, toBlock);
+            stmt.executeQuery();
 
-                currBlock = toBlock + 1;
-            }
-
-            printProgress(100);
-        } catch(SQLException e) {
-            e.printStackTrace();
-        } finally {
-            SQLUtility.closeQuietly(connection);
+            currBlock = toBlock + 1;
         }
+
+        printProgress(100);
+
+        connection.close();
     }
 
     private void printProgress(int percent) {

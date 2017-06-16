@@ -1,14 +1,12 @@
 package com.toasttab.pgwarm.tasks;
 
-import com.toasttab.pgwarm.db.DatabaseRelationship;
+import com.toasttab.pgwarm.db.Relationship;
 import com.toasttab.pgwarm.db.DatabaseRelationshipFinder;
 import com.toasttab.pgwarm.db.PrewarmMode;
 import com.toasttab.pgwarm.db.filters.RelationshipFilter;
-import com.toasttab.pgwarm.db.filters.RelationshipSchemaFilter;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
@@ -19,7 +17,7 @@ public class DatabaseWarmJob {
     private final int workers;
     private final PrewarmMode mode;
 
-    private final ConcurrentLinkedQueue<DatabaseRelationship> workQueue = new ConcurrentLinkedQueue<DatabaseRelationship>();
+    private final ConcurrentLinkedQueue<Relationship> workQueue = new ConcurrentLinkedQueue<Relationship>();
 
     public DatabaseWarmJob(BasicDataSource pool, List<RelationshipFilter> filters, int workers, PrewarmMode mode) {
         this.pool = pool;
@@ -32,7 +30,7 @@ public class DatabaseWarmJob {
         return mode;
     }
 
-    public final DatabaseRelationship getNextRelationship() {
+    public final Relationship getNextRelationship() {
         return workQueue.poll();
     }
 
@@ -40,7 +38,7 @@ public class DatabaseWarmJob {
         return this.pool;
     }
 
-    public void run() {
+    public void run() throws Exception {
         workQueue.addAll(
                 new DatabaseRelationshipFinder(pool, filters).getRelationships()
         );

@@ -1,6 +1,6 @@
 package com.toasttab.pgwarm.tasks;
 
-import com.toasttab.pgwarm.db.DatabaseRelationship;
+import com.toasttab.pgwarm.db.Relationship;
 
 import java.sql.SQLException;
 
@@ -12,7 +12,7 @@ public class RelationWarmupWorker implements Runnable {
     }
 
     public void run() {
-        DatabaseRelationship relationship = null;
+        Relationship relationship = null;
         while((relationship = job.getNextRelationship()) != null) {
             try {
                 new RelationWarmupTask(job.getConnectionPool().getConnection(), relationship, job.getPrewarmMode()).run();

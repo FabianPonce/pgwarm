@@ -1,12 +1,12 @@
 package com.toasttab.pgwarm.db;
 
 
-public class DatabaseRelationship {
+public abstract class Relationship {
     private final String relname;
     private final String schema;
     private final RelationshipType type;
 
-    public DatabaseRelationship(String relname, String schema, RelationshipType reltype) {
+    public Relationship(String relname, String schema, RelationshipType reltype) {
         this.relname = relname;
         this.schema = schema;
         this.type = reltype;
@@ -22,5 +22,10 @@ public class DatabaseRelationship {
 
     public final RelationshipType getRelationshipType() {
         return this.type;
+    }
+
+    @Override
+    public String toString() {
+        return getSchema() + "." + "\"" + getName() + "\"";
     }
 }
