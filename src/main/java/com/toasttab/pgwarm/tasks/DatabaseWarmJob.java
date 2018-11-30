@@ -1,29 +1,39 @@
 package com.toasttab.pgwarm.tasks;
 
-import com.toasttab.pgwarm.db.Relationship;
+import com.github.tomaslanger.chalk.Ansi;
 import com.toasttab.pgwarm.db.DatabaseRelationshipFinder;
 import com.toasttab.pgwarm.db.PrewarmMode;
+import com.toasttab.pgwarm.db.Relationship;
 import com.toasttab.pgwarm.db.filters.RelationshipFilter;
-import org.apache.commons.dbcp2.BasicDataSource;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.function.Consumer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import org.apache.commons.dbcp2.BasicDataSource;
 
 public class DatabaseWarmJob {
     private final BasicDataSource pool;
     private final List<RelationshipFilter> filters;
-    private final int workers;
     private final PrewarmMode mode;
+    private final int numWorkers;
 
-    private final ConcurrentLinkedQueue<Relationship> workQueue = new ConcurrentLinkedQueue<Relationship>();
+    private final ExecutorService executorService;
+    private final ScheduledExecutorService scheduledExecutorService;
+    private final ConcurrentLinkedQueue<Relationship> workQueue;
 
     public DatabaseWarmJob(BasicDataSource pool, List<RelationshipFilter> filters, int workers, PrewarmMode mode) {
         this.pool = pool;
         this.filters = filters;
-        this.workers = workers;
+        this.numWorkers = workers;
         this.mode = mode;
+
+        executorService = Executors.newFixedThreadPool(workers);
+        scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+        workQueue = new ConcurrentLinkedQueue<>();
     }
 
     public PrewarmMode getPrewarmMode() {
@@ -42,25 +52,33 @@ public class DatabaseWarmJob {
         workQueue.addAll(
                 new DatabaseRelationshipFinder(pool, filters).getRelationships()
         );
-
-        List<Thread> threads = new ArrayList<Thread>();
-        for(int i = 0; i < workers; i++) {
+        final int totalRelations = workQueue.size();
+        final List<RelationWarmupWorker> workers = new ArrayList<>();
+        for(int i = 0; i < numWorkers; i++) {
             RelationWarmupWorker worker = new RelationWarmupWorker(this);
-            Thread t = new Thread(worker);
-            t.setName(String.format("DatabaseWarmUpWorker - %d", i));
-            t.start();
-
-            threads.add(t);
+            workers.add(worker);
+            executorService.execute(worker);
+            System.out.println();
         }
+        System.out.println();
 
-        threads.forEach(new Consumer<Thread>() {
-            public void accept(Thread thread) {
-                try {
-                    thread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        scheduledExecutorService.scheduleAtFixedRate(
+                () -> {
+                    for(int i = 0; i < numWorkers + 1; i++) {
+                        System.out.print(Ansi.cursorUp(1));
+                        System.out.print(Ansi.eraseLine());
+                    }
+                    System.out.println(String.format("Working on relation %d of %d",
+                            totalRelations - workQueue.size(), totalRelations));
+                    System.out.println(workers.stream().map(RelationWarmupWorker::getProgressString).collect(
+                            Collectors.joining("\n")));
+
+                },
+                0, 1, TimeUnit.SECONDS);
+
+        executorService.shutdown();
+        executorService.awaitTermination(24, TimeUnit.HOURS);
+        scheduledExecutorService.shutdown();
+        scheduledExecutorService.awaitTermination(24, TimeUnit.HOURS);
     }
 }

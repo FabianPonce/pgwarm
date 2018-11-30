@@ -9,7 +9,7 @@ public class TableRelationship extends Relationship {
     public TableRelationship(String schema, String name) {
         super(name, schema, RelationshipType.TABLE);
 
-        this.relatedIndices = new ArrayList<IndexRelationship>();
+        this.relatedIndices = new ArrayList<>();
     }
 
     public Collection<IndexRelationship> getRelatedIndices() {

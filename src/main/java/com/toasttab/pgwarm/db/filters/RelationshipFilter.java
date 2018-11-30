@@ -9,5 +9,5 @@ public interface RelationshipFilter {
      * @param relation
      * @return true if the relationship satisfies given criteria, false otherwise
      */
-    public boolean filter(Relationship relation);
+    boolean filter(Relationship relation);
 }

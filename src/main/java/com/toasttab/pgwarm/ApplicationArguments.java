@@ -16,6 +16,9 @@ public class ApplicationArguments {
     @Parameter(names = { "--port", "-P" }, description = "The port number the target database is listening for connections on")
     public int dbPort = 5432;
 
+    @Parameter(names = { "--no-ssl", "-S" }, description = "Whether to disable ssl on database connection (meant for local testing)")
+    public boolean noSsl = false;
+
     @Parameter(names = { "--database", "-d" }, description = "The database name to connect to")
     public String dbName = "";
 

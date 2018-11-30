@@ -1,12 +1,13 @@
 package com.toasttab.pgwarm.tasks;
 
-import com.toasttab.pgwarm.db.Relationship;
 import com.toasttab.pgwarm.db.PrewarmMode;
+import com.toasttab.pgwarm.db.Relationship;
 import com.toasttab.pgwarm.db.util.PSQLUtility;
 import com.toasttab.pgwarm.util.ConsoleProgressBar;
-import org.postgresql.util.PSQLState;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class RelationWarmupTask {
     /* This setting controls the maximum number of PostgreSQL blocks to prewarm in one query.
@@ -29,10 +30,15 @@ public class RelationWarmupTask {
     private final Relationship relation;
     private final PrewarmMode mode;
 
+    private volatile int maxBlockId;
+    private volatile int currBlock;
+
     public RelationWarmupTask(Connection conn, Relationship relation, PrewarmMode mode) {
         this.connection = conn;
         this.relation = relation;
         this.mode = mode;
+        this.maxBlockId = 1;
+        this.currBlock = 0;
     }
 
     private int getTotalBlocks() throws SQLException {
@@ -41,7 +47,7 @@ public class RelationWarmupTask {
                 relation.getSchema(), relation.getName()
         ));
         ResultSet result = stmt.executeQuery();
-        while(result.next()) {
+        if (result.next()) {
             return result.getInt(1);
         }
 
@@ -49,16 +55,12 @@ public class RelationWarmupTask {
     }
 
     public void run() throws SQLException, InterruptedException {
-        System.out.println();
-
-        int maxBlockId = Math.max(0, getTotalBlocks() - 1);
-        int currBlock = 0;
+        maxBlockId = Math.max(0, getTotalBlocks() - 1);
+        currBlock = 0;
         int retryCount = 0;
 
         while(currBlock < maxBlockId) {
             int toBlock = Math.min(currBlock + MAX_BLOCK_READ_SIZE, maxBlockId);
-
-            printProgress( (int) ((float)currBlock / (float)maxBlockId * 100) );
 
             try {
                 PreparedStatement stmt = connection.prepareStatement(String.format(
@@ -81,14 +83,13 @@ public class RelationWarmupTask {
             }
         }
 
-        printProgress(100);
+        currBlock = maxBlockId;
 
         connection.close();
     }
 
-    private void printProgress(int percent) {
-        System.out.print("\r");
-        System.out.print(String.format("%s.\"%s\" ", relation.getSchema(), relation.getName()));
-        System.out.print(new ConsoleProgressBar(percent));
+    public String getProgressString() {
+        return String.format("%s.%-40s ", relation.getSchema(), relation.getName()) +
+                new ConsoleProgressBar(currBlock, maxBlockId);
     }
 }

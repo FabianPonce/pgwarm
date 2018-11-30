@@ -11,9 +11,7 @@ public class PSQLUtility {
      * See: https://www.postgresql.org/docs/9.2/static/errcodes-appendix.html
      */
     public static boolean isRetriableSqlState(String sqlState) {
-        if(sqlState.equals("40001")) // cancelled due to conflict with recovery
-            return true;
-
-        return false;
+        // cancelled due to conflict with recovery
+        return sqlState.equals("40001");
     }
 }

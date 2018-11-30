@@ -5,65 +5,53 @@ public class DatabaseConnectionStringBuilder {
     private String username = "";
     private String password = "";
     private int port        = 5432;
+    private boolean ssl = true;
     private String database = "";
     private String applicationName = "";
 
     public DatabaseConnectionStringBuilder() {
     }
 
-    public DatabaseConnectionStringBuilder(DatabaseConnectionStringBuilder clone) {
-        hostname = clone.hostname;
-        username = clone.username;
-        password = clone.password;
-        port = clone.port;
-        database = clone.database;
-        applicationName = clone.applicationName;
-    }
-
     public final DatabaseConnectionStringBuilder withHostname(String hostname) {
-        DatabaseConnectionStringBuilder builder = new DatabaseConnectionStringBuilder(this);
-        builder.hostname = hostname;
-
-        return builder;
+        this.hostname = hostname;
+        return this;
     }
 
     public final DatabaseConnectionStringBuilder withUsername(String username) {
-        DatabaseConnectionStringBuilder builder = new DatabaseConnectionStringBuilder(this);
-        builder.username = username;
-
-        return builder;
+        this.username = username;
+        return this;
     }
 
     public final DatabaseConnectionStringBuilder withPassword(String password) {
-        DatabaseConnectionStringBuilder builder = new DatabaseConnectionStringBuilder(this);
-        builder.password = password;
-
-        return builder;
+        this.password = password;
+        return this;
     }
 
     public final DatabaseConnectionStringBuilder withPort(int port) {
-        DatabaseConnectionStringBuilder builder = new DatabaseConnectionStringBuilder(this);
-        builder.port = port;
+        this.port = port;
+        return this;
+    }
 
-        return builder;
+    public final DatabaseConnectionStringBuilder withSsl(boolean ssl) {
+        this.ssl = ssl;
+        return this;
     }
 
     public final DatabaseConnectionStringBuilder withDatabase(String database) {
-        DatabaseConnectionStringBuilder builder = new DatabaseConnectionStringBuilder(this);
-        builder.database = database;
-
-        return builder;
+        this.database = database;
+        return this;
     }
 
     public final DatabaseConnectionStringBuilder withApplicationName(String applicationName) {
-        DatabaseConnectionStringBuilder builder = new DatabaseConnectionStringBuilder(this);
-        builder.applicationName = applicationName;
-
-        return builder;
+        this.applicationName = applicationName;
+        return this;
     }
 
     public final String toString() {
-        return String.format("jdbc:postgresql://%s:%s/%s?ssl=true&user=%s&password=%s&sslfactory=org.postgresql.ssl.NonValidatingFactory&ApplicationName=%s",
-                hostname, port, database, username, password, applicationName);
+        String connectionString = String.format("jdbc:postgresql://%s:%s/%s?ssl=%s&user=%s&password=%s%s&ApplicationName=%s",
+                hostname, port, database, ssl ? "true":"disable", username, password,
+                ssl ? "&sslfactory=org.postgresql.ssl.NonValidatingFactory":"", applicationName);
+        //System.out.println(connectionString);
+        return connectionString;
     }
 }
